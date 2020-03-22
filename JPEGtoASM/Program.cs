@@ -38,7 +38,7 @@ namespace JPEGtoASM
         {
             Console.WriteLine("BMP to ASM");
             Console.WriteLine("by OxyTom#1831");
-            Console.WriteLine("https://github.com/oxypomme/JPEGtoASM");
+            Console.WriteLine("https://github.com/oxypomme/BMPtoASM");
 
             Console.WriteLine("\n###\n");
 
