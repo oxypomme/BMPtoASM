@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Drawing;
-using System.Text;
 using System.Linq;
 
 namespace JPEGtoASM
@@ -107,7 +106,7 @@ namespace JPEGtoASM
             }
             else if (args.Length == 0 || Array.Exists(args, s => s.Equals("help")))
             {
-                Console.WriteLine("Help :\n\tJPEGtoASM <file.bmp> [--t] [--o <output.asm>]");
+                Console.WriteLine("Help :\n\tBMPtoASM <file.bmp> [--t] [--o <output.asm>]");
                 Console.WriteLine("--t :\n\tAllow transparency, aka don't draw black pixels");
                 Console.WriteLine("--o <file.asm> :\n\tChange the output name");
             }
