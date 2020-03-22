@@ -75,6 +75,7 @@ namespace JPEGtoASM
             if (args.Length > 0)
             {
                 string name = Path.GetFileNameWithoutExtension(args.First()) + ".asm";
+                Color transparentColor = Color.FromArgb(255, 0, 0, 0);
                 try
                 {
                     if (Array.Exists(args, s => s.Equals("--o")))
@@ -85,6 +86,11 @@ namespace JPEGtoASM
                     Console.WriteLine("ERROR : You must specify an output name");
                     Environment.Exit(0);
                 }
+                if (Array.Exists(args, s => s.Equals("--t")))
+                    if (args.Length > Array.IndexOf(args, "--t") + 3)
+                        transparentColor = Color.FromArgb(255, int.Parse(args[Array.IndexOf(args, "--t") + 1]),
+                            int.Parse(args[Array.IndexOf(args, "--t") + 2]),
+                            int.Parse(args[Array.IndexOf(args, "--t") + 3]));
                 if (File.Exists(name))
                 {
                     Console.WriteLine("ERROR : Output file already exists");
@@ -103,8 +109,8 @@ namespace JPEGtoASM
                             int offsetSinceLastPixel = 0;
                             for (int y = 0; y < image.Size.Height; y++)
                             {
-                                var pixel = image.GetPixel(x, y);
-                                if (!(pixel.Equals(Color.FromArgb(255, 0, 0, 0)) && Array.Exists(args, s => s.Equals("--t"))))
+                                var pixel = Color.FromArgb(255, image.GetPixel(x, y));
+                                if (!(pixel.Equals(transparentColor) && Array.Exists(args, s => s.Equals("--t"))))
                                 {
                                     if (offsetSinceLastPixel > 0)
                                         if (offsetSinceLastPixel == 1)
@@ -134,7 +140,7 @@ namespace JPEGtoASM
             else if (args.Length == 0 || Array.Exists(args, s => s.Equals("help")))
             {
                 Console.WriteLine("Help :\n\tJPEGtoASM <file.bmp> [--t] [--o <output.asm>]");
-                Console.WriteLine("--t :\n\tAllow transparency, aka don't draw black pixels");
+                Console.WriteLine("--t [<r> <g> <b>]:\n\tAllow transparency, aka don't draw black pixels by default, or specify another color key (0-255)");
                 Console.WriteLine("--o <file.asm> :\n\tChange the output name");
             }
         }
