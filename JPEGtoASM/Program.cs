@@ -100,7 +100,7 @@ namespace JPEGtoASM
                             for (int y = 0; y < image.Size.Height; y++)
                             {
                                 var pixel = image.GetPixel(x, y);
-                                if (!(pixel == Color.Black && Array.Exists(args, s => s.Equals("--t"))))
+                                if (!(pixel.Equals(Color.FromArgb(255, 0, 0, 0)) && Array.Exists(args, s => s.Equals("--t"))))
                                 {
                                     if (offsetSinceLastPixel > 0)
                                         if (offsetSinceLastPixel == 1)
