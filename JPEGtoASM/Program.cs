@@ -2,6 +2,7 @@
 using System.IO;
 using System.Drawing;
 using System.Text;
+using System.Linq;
 
 namespace JPEGtoASM
 {
@@ -44,7 +45,7 @@ namespace JPEGtoASM
 
             if (args.Length > 0)
             {
-                string name = args[0].Split('.')[0] + ".asm";
+                string name = Path.GetFileNameWithoutExtension(args.First()) + ".asm";
                 try
                 {
                     if (Array.Exists(args, s => s.Equals("--o")))
