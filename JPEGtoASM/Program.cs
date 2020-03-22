@@ -40,7 +40,7 @@ namespace JPEGtoASM
             Console.WriteLine("by OxyTom#1831");
             Console.WriteLine("https://github.com/oxypomme/JPEGtoASM");
 
-            Console.WriteLine("###");
+            Console.WriteLine("\n###\n");
 
             if (args.Length > 0)
             {
@@ -61,8 +61,7 @@ namespace JPEGtoASM
 
                 try
                 {
-                    using (var fileBMP = new FileStream(args[0], FileMode.Open, FileAccess.Read))
-                    using (var image = new Bitmap(fileBMP))
+                    using (var image = new Bitmap(args[0]))
                         for (int x = 0; x < image.Size.Width; x++)
                         {
                             if (x != 0)
@@ -88,7 +87,7 @@ namespace JPEGtoASM
                             fileASM.Write(sb.ToString());
                         Console.WriteLine(name + " created");
                     }
-                    catch (ArgumentException)
+                    catch (IOException)
                     {
                         Console.WriteLine("ERROR : Output file already exists");
                     }
