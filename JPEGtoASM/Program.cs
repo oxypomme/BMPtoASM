@@ -107,7 +107,7 @@ namespace JPEGtoASM
             else if (args.Length == 0 || Array.Exists(args, s => s.Equals("help")))
             {
                 Console.WriteLine("Help :\n\tBMPtoASM <file.bmp> [--t] [--o <output.asm>]");
-                Console.WriteLine("--t :\n\tAllow transparency, aka don't draw black pixels");
+                Console.WriteLine("--t [<r> <g> <b>]:\n\tAllow transparency, aka don't draw black pixels by default, or specify another color key (0-255)");
                 Console.WriteLine("--o <file.asm> :\n\tChange the output name");
             }
         }
