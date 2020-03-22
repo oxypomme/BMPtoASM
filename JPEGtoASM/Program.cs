@@ -96,17 +96,22 @@ namespace JPEGtoASM
                         {
                             if (x != 0)
                                 sb.Append("\n\tinc  AX\n\tmov  BX, yA\n\n");
+                            int offsetSinceLastPixel = 0;
                             for (int y = 0; y < image.Size.Height; y++)
                             {
-                                if (y != 0)
-                                    sb.Append("\tinc  BX\n");
-
                                 var pixel = image.GetPixel(x, y);
                                 if (!(pixel == Color.Black && Array.Exists(args, s => s.Equals("--t"))))
                                 {
+                                    if (offsetSinceLastPixel > 0)
+                                        if (offsetSinceLastPixel == 1)
+                                            sb.Append("\tinc  BX\n");
+                                        else
+                                            sb.Append("\tadd  BX, " + offsetSinceLastPixel + "\n");
                                     sb.Append("\toxgSHOWPIXEL AX, BX, " + GetClosedMatch(pixel));
                                     sb.Append(string.Format("\t; {0}-{1}\n", x, y));
+                                    offsetSinceLastPixel = 0;
                                 }
+                                offsetSinceLastPixel++;
                             }
                         }
                     try
