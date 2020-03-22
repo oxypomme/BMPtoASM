@@ -85,9 +85,13 @@ namespace JPEGtoASM
                     Console.WriteLine("ERROR : You must specify an output name");
                     Environment.Exit(0);
                 }
-
-                var sb = new StringBuilder();
-                sb.Append("nameTMP MACRO xA, yA\n\tpush AX\n\tpush BX\n\n\tmov  AX, xA\n\tmov  BX, yA\n\n");
+                if (File.Exists(name))
+                {
+                    Console.WriteLine("ERROR : Output file already exists");
+                    return;
+                }
+                var sw = new StreamWriter(name);
+                sw.Write("nameTMP MACRO xA, yA\n\tpush AX\n\tpush BX\n\n\tmov  AX, xA\n\tmov  BX, yA\n\n");
 
                 try
                 {
@@ -95,7 +99,7 @@ namespace JPEGtoASM
                         for (int x = 0; x < image.Size.Width; x++)
                         {
                             if (x != 0)
-                                sb.Append("\n\tinc  AX\n\tmov  BX, yA\n\n");
+                                sw.Write("\n\tinc  AX\n\tmov  BX, yA\n\n");
                             int offsetSinceLastPixel = 0;
                             for (int y = 0; y < image.Size.Height; y++)
                             {
@@ -104,27 +108,19 @@ namespace JPEGtoASM
                                 {
                                     if (offsetSinceLastPixel > 0)
                                         if (offsetSinceLastPixel == 1)
-                                            sb.Append("\tinc  BX\n");
+                                            sw.Write("\tinc  BX\n");
                                         else
-                                            sb.Append("\tadd  BX, " + offsetSinceLastPixel + "\n");
-                                    sb.Append("\toxgSHOWPIXEL AX, BX, " + GetClosedMatch(pixel));
-                                    sb.Append(string.Format("\t; {0}-{1}\n", x, y));
+                                            sw.Write("\tadd  BX, " + offsetSinceLastPixel + "\n");
+                                    sw.Write("\toxgSHOWPIXEL AX, BX, " + GetClosedMatch(pixel));
+                                    sw.Write(string.Format("\t; {0}-{1}\n", x, y));
                                     offsetSinceLastPixel = 0;
                                 }
                                 offsetSinceLastPixel++;
                             }
                         }
-                    try
-                    {
-                        sb.Append("\n\tpop  BX\n\tpop  AX\nENDM");
-                        using (var fileASM = new StreamWriter(new FileStream(name, FileMode.CreateNew, FileAccess.Write)))
-                            fileASM.Write(sb.ToString());
-                        Console.WriteLine(name + " created");
-                    }
-                    catch (IOException)
-                    {
-                        Console.WriteLine("ERROR : Output file already exists");
-                    }
+                    sw.Write("\n\tpop  BX\n\tpop  AX\nENDM");
+                    sw.Close();
+                    Console.WriteLine(name + " created");
                 }
                 catch (FileNotFoundException)
                 {
