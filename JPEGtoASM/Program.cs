@@ -6,9 +6,10 @@ using System.Linq;
 
 namespace JPEGtoASM
 {
-    internal class Program
+    internal static class Program
     {
-        private static string[] VGACols =
+        private static Bitmap Colors = BMPtoASM.Properties.Resources.colors;
+        /*private static string[] VGACols =
            {"#FF000000", "#FF0000AA", "#FF00AA00", "#FF00AAAA", "#FFAA0000", "#FFAA00AA", "#FFAA5500", "#FFAAAAAA", "#FF555555", "#FF5555FF",
             "#FF55FF55", "#FF55FFFF", "#FFFF5555", "#FFFF55FF", "#FFFFFF55", "#FFFFFFFF", "#FF000000", "#FF101010", "#FF202020", "#FF353535",
             "#FF454545", "#FF555555", "#FF656565", "#FF757575", "#FF8A8A8A", "#FF9A9A9A", "#FFAAAAAA", "#FFBABABA", "#FFCACACA", "#FFDFDFDF",
@@ -33,7 +34,35 @@ namespace JPEGtoASM
             "#FF413120", "#FF413920", "#FF414120", "#FF394120", "#FF314120", "#FF284120", "#FF204120", "#FF204128", "#FF204131", "#FF204139",
             "#FF204141", "#FF203941", "#FF203141", "#FF202841", "#FF2D2D41", "#FF312D41", "#FF352D41", "#FF3D2D41", "#FF412D41", "#FF412D3D",
             "#FF412D35", "#FF412D31", "#FF412D2D", "#FF41312D", "#FF41352D", "#FF413D2D", "#FF41412D", "#FF3D412D", "#FF35412D", "#FF31412D",
-            "#FF2D412D", "#FF2D4131", "#FF2D4135", "#FF2D413D", "#FF2D4141", "#FF2D3D41", "#FF2D3541", "#FF2D3141", "#FF000000" };
+            "#FF2D412D", "#FF2D4131", "#FF2D4135", "#FF2D413D", "#FF2D4141", "#FF2D3D41", "#FF2D3541", "#FF2D3141", "#FF000000" };*/
+
+        public static string GetClosedMatch(Color c)
+        {
+            int Distance(Color c1, Color c2) => //generate an integer giving the squared euclidian distance between 2 colors
+                (c1.R - c2.R) * (c1.R - c2.R) +
+                (c1.G - c2.G) * (c1.G - c2.G) +
+                (c1.B - c2.B) * (c1.B - c2.B);
+
+            string format(int x, int y) => "0" + y.ToString("X") + x.ToString("X") + "h";
+
+            int closestX = 0, closestY = 0;
+            Color closest = Colors.GetPixel(0, 0);
+            for (int i = 0; i < Colors.Width; i++)
+                for (int j = 0; j < Colors.Height; j++)
+                {
+                    Color curr = Colors.GetPixel(i, j);
+                    if (Distance(c, curr) == 0) // a perfect match
+                        return format(i, j);
+                    if (Distance(c, closest) > Distance(curr, c))
+                    {
+                        closestX = i;
+                        closestY = j;
+                        closest = curr;
+                    }
+                }
+            //we didn't found a perfect match, we give the closest color available
+            return format(closestX, closestY);
+        }
 
         private static void Main(string[] args)
         {
@@ -73,10 +102,9 @@ namespace JPEGtoASM
                                     sb.Append("\tinc  BX\n");
 
                                 var pixel = image.GetPixel(x, y);
-                                var color = Array.IndexOf(VGACols, "#" + pixel.ToArgb().ToString("X")).ToString("X");
-                                if (!(color == "0" && Array.Exists(args, s => s.Equals("--t"))))
+                                if (!(pixel == Color.Black && Array.Exists(args, s => s.Equals("--t"))))
                                 {
-                                    sb.Append("\toxgSHOWPIXEL AX, BX, 0" + color + "h");
+                                    sb.Append("\toxgSHOWPIXEL AX, BX, " + GetClosedMatch(pixel));
                                     sb.Append(string.Format("\t; {0}-{1}\n", x, y));
                                 }
                             }
